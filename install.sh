@@ -45,12 +45,12 @@ selectVersion=${VERSIONS[$?]}
 downloadLink=$(curl -s https://jdk.java.net/java-se-ri/$selectVersion | grep -m 1 -o "https://download.java.net/openjdk/jdk.*linux.*.gz" | sed "s/>//g" | sed "s/;//g" | sed "s/\"//g")
 
 javadir="/usr/lib/jvm/"
-if [ !-d "$javadir" ]; then
+if [ ! -d "$javadir" ]; then
     runCommand "mkdir $javadir"
 fi
 
 tmpJavaDir="/tmp/java-installer/"
-if [ !-d "$tmpJavaDir" ]; then
+if [ ! -d "$tmpJavaDir" ]; then
     runCommand "mkdir $tmpJavaDir"
 fi
 
