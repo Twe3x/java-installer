@@ -60,10 +60,14 @@ runCommand "wget $downloadLink" "download Java SE $selectVersion"
 runCommand "tar -xvzf *.tar.gz" "unpacking JDK"
 runCommand "rm -rf *.tar.gz"
 
+tmp=$(ls)
+runCommand "mv $tmp java-$selectVersion-openjdk"
+
 java=$(ls)
 
 runCommand "mv $java $javadir"
 
-runCommand "update-alternatives --install /usr/bin/java java $javadir$java/bin/java 1"
+runCommand "update-alternatives --install /usr/bin/java java $javadir$java/bin/java 1020"
+runCommand "update-alternatives --install /usr/bin/javac javac $javadir$java/bin/javac 1020"
 
 runCommand "update-alternatives --config java" "the installation was successful"
