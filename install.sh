@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-
-#"curl -s https://jdk.java.net/java-se-ri/18 | grep -m 1 -o "se-ri/......" | sed "s/se-ri\///g" | sed "s/\"//g" | sed "s/>Jav//g" | sed "s/>Ja//g""
+#!/bin/bash
 
 # Colors
 red="\e[0;91m"
@@ -30,11 +28,13 @@ runCommand(){
     fi
 }
 
+runCommand "apt install jq -y" "apt install jq"
+
 #get BashSelect
 source <(curl -s https://raw.githubusercontent.com/GermanJag/BashSelect.sh/main/BashSelect.sh)
 clear
 
-readarray -t VERSIONS <<<$(curl -s https://jdk.java.net/java-se-ri/18 | grep -m 1 -o "se-ri/......" | sed "s/se-ri\///g" | sed "s/\"//g" | sed "s/>Jav//g" | sed "s/>Ja//g")
+readarray -t VERSIONS <<<$(curl -s https://api.adoptium.net/v3/info/available_releases | jq '.available_releases[]')
 
 export OPTIONS=(${VERSIONS[*]})
 
@@ -42,7 +42,7 @@ bashSelect
 
 selectVersion=${VERSIONS[$?]}
 
-downloadLink=$(curl -s https://jdk.java.net/java-se-ri/$selectVersion | grep -m 1 -o "https://download.java.net/openjdk/jdk.*linux.*.gz" | sed "s/>//g" | sed "s/;//g" | sed "s/\"//g")
+downloadLink=$(curl -s "https://api.adoptium.net/v3/assets/feature_releases/${selectVersion}/ga?architecture=x64&heap_size=normal&image_type=jdk&os=linux&page=1&page_size=1&project=jdk&sort_method=DEFAULT&sort_order=DESC&vendor=eclipse" | jq '.[].binaries' | jq '.[].package.link')
 
 javadir="/usr/lib/jvm/"
 if [ ! -d "$javadir" ]; then
@@ -70,4 +70,5 @@ runCommand "mv $java $javadir"
 runCommand "update-alternatives --install /usr/bin/java java $javadir$java/bin/java 1020"
 runCommand "update-alternatives --install /usr/bin/javac javac $javadir$java/bin/javac 1020"
 
-runCommand "update-alternatives --config java" "the installation was successful"
+runCommand "update-alternatives --set java $javadir$java/bin/java"
+runCommand "update-alternatives --set javac $javadir$java/bin/javac" "the installation was successful"
