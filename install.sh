@@ -28,7 +28,8 @@ runCommand(){
     fi
 }
 
-runCommand "apt install jq -y" "apt install jq"
+jq --version
+if [[ $? == 127  ]]; then  apt -y install jq; fi
 
 #get BashSelect
 source <(curl -s https://raw.githubusercontent.com/GermanJag/BashSelect.sh/main/BashSelect.sh)
